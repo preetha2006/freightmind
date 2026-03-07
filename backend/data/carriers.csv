@@ -1,0 +1,16 @@
+carrier_id,carrier_name,type,fleet_size,founded_year,hq,coverage,on_time_rate_pct,damage_rate_pct,avg_delay_days,service_score_10,total_shipments_ytd,active_lanes,min_weight_kg,max_weight_kg,gst_registered,iso_certified,avg_price_per_km_inr
+C001,BlueDart Express,Express,320,1983,Mumbai,PAN India,91.6,1.38,4.7,8.8,6438,32,10,20000,Yes,Yes,15.57
+C002,GATI Limited,Standard,280,1989,Hyderabad,PAN India,83.0,1.96,5.8,7.7,7233,31,10,30000,Yes,Yes,12.48
+C003,Delhivery Freight,Express,450,2011,Gurugram,PAN India,89.3,1.58,4.6,8.5,2991,47,10,10000,Yes,No,15.53
+C004,TCI Freight,FTL,510,1958,Gurugram,PAN India,88.0,1.68,5.5,7.9,6027,53,10,10000,Yes,No,17.44
+C005,Mahindra Logistics,FTL,390,2000,Mumbai,PAN India,84.4,2.01,5.9,7.7,2473,45,50,5000,Yes,Yes,18.08
+C006,Ecom Express,Standard,260,2012,New Delhi,PAN India,80.3,2.66,7.3,7.0,4140,62,50,5000,Yes,No,20.58
+C007,Safexpress,Express,175,1997,New Delhi,PAN India,90.9,1.41,4.5,8.6,4300,28,50,20000,Yes,Yes,23.27
+C008,VRL Logistics,LTL,430,1976,Hubballi,South & West India,83.3,2.12,6.9,7.3,1575,47,50,5000,Yes,Yes,25.86
+C009,Rivigo,Tech-FTL,210,2014,Gurugram,PAN India,88.7,1.58,5.4,8.6,4313,53,100,20000,Yes,Yes,17.92
+C010,XpressBees Freight,Standard,190,2015,Pune,PAN India,81.4,2.34,7.2,7.3,2916,52,10,10000,Yes,Yes,14.61
+C011,SpotOn Logistics,LTL,145,2012,New Delhi,North & Central India,76.9,3.1,7.7,7.0,4308,52,25,20000,Yes,Yes,15.66
+C012,ShadowFax Freight,Express,130,2015,Bengaluru,Metro Cities,87.3,1.67,5.1,8.2,1462,58,100,20000,Yes,Yes,15.38
+C013,Allcargo Logistics,FTL,360,1993,Mumbai,PAN India,86.1,1.77,6.2,8.0,5846,58,25,30000,Yes,No,26.15
+C014,DHL Supply Chain India,Express,290,2004,Mumbai,PAN India,94.3,1.26,4.3,9.2,6466,76,25,20000,Yes,Yes,15.95
+C015,FedEx Freight India,Express,240,2011,Mumbai,PAN India,92.8,0.88,3.5,9.1,5798,86,50,30000,Yes,No,17.79
