@@ -2,13 +2,9 @@
 
 AI-powered carrier selection and procurement intelligence platform for logistics teams. Built for the LogisticsNow LoRRI AI Hackathon Round 2.
 
----
-
 ## Overview
 
 FreightMind is a full-stack web application that helps procurement and logistics teams make faster, data-driven carrier selection decisions. The platform uses a machine learning model trained on historical shipment data to score and rank carriers, detect overpriced bids, simulate award splits, and learn continuously from shipment outcomes.
-
----
 
 ## Features
 
@@ -19,8 +15,6 @@ FreightMind is a full-stack web application that helps procurement and logistics
 - **Lane Intelligence Map** - Interactive India map (Leaflet.js) showing freight route network colored by risk level with lane-level analytics
 - **Feedback Loop** - Mark shipment outcomes to continuously improve model recommendations over time
 - **Dashboard** - KPI overview, top carrier rankings, monthly shipment trend, and top lanes by volume
-
----
 
 ## Tech Stack
 
@@ -38,8 +32,6 @@ FreightMind is a full-stack web application that helps procurement and logistics
 - Leaflet.js (interactive map)
 - Axios
 - Tailwind CSS utilities
-
----
 
 ## Project Structure
 
@@ -78,8 +70,6 @@ freightmind/
 │           └── FeedbackLoop.jsx
 ```
 
----
-
 ## Getting Started
 
 ### Prerequisites
@@ -112,8 +102,6 @@ The frontend will be available at `http://localhost:5173`.
 
 > Both the backend and frontend must be running simultaneously for the application to function.
 
----
-
 ## API Endpoints
 
 | Method | Endpoint | Description |
@@ -129,8 +117,6 @@ The frontend will be available at `http://localhost:5173`.
 | POST | `/api/feedback` | Submit shipment outcome |
 | GET | `/api/model/importance` | Feature importance scores |
 
----
-
 ## ML Model
 
 - **Algorithm** - XGBoost Regressor
@@ -139,8 +125,6 @@ The frontend will be available at `http://localhost:5173`.
 - **Features** - On-time rate, damage rate, average delay, service score, fleet size, active lanes, distance, weight, price ratio, priority, vehicle type, carrier type
 - **Explainability** - SHAP values used to generate per-carrier, per-prediction explanations shown in the UI
 
----
-
 ## Dataset
 
 The synthetic dataset covers:
@@ -148,18 +132,3 @@ The synthetic dataset covers:
 - 20 major Indian cities
 - Industries including FMCG, Pharma, Automotive, Electronics, Textile, and Retail
 - Vehicle types: LCV, MCV, HCV, Trailer, Container
-
----
-
-## Hackathon Context
-
-- **Event** - LogisticsNow LoRRI AI Hackathon Round 2
-- **Problem Statement** - Carrier Selection Agent in Procurement
-- **Team** - Shortlisted from Round 1 for Round 2 final submission
-- **Submission deadline** - 8 March 2026
-
----
-
-## License
-
-This project was built for hackathon purposes. All carrier names are used for demonstration only.
