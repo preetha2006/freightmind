@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FreightMind — User Flow Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:       #F0F5FF;
+    --white:    #FFFFFF;
+    --b900:     #0A1628;
+    --b800:     #0F2144;
+    --b700:     #1A3A6E;
+    --b600:     #1D4ED8;
+    --b500:     #2563EB;
+    --b400:     #3B82F6;
+    --b300:     #60A5FA;
+    --b100:     #DBEAFE;
+    --b50:      #EFF6FF;
+    --slate:    #64748B;
+    --line:     #BFDBFE;
+    --green:    #15803D;
+    --green-bg: #F0FDF4;
+    --green-bd: #BBF7D0;
+    --amber:    #B45309;
+    --amber-bg: #FFFBEB;
+    --amber-bd: #FDE68A;
+    --red:      #BE123C;
+    --red-bg:   #FFF1F2;
+    --red-bd:   #FECDD3;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: var(--sans);
+    color: var(--b900);
+    padding: 48px 40px;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-block;
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--b500); background: var(--b50);
+    border: 1px solid var(--b100); padding: 5px 14px; border-radius: 4px;
+    margin-bottom: 14px;
+  }
+  .header h1 { font-size: 30px; font-weight: 700; color: var(--b900); margin-bottom: 8px; letter-spacing: -0.4px; }
+  .header p  { font-size: 13px; color: var(--slate); }
+
+  /* ── Canvas ── */
+  .canvas { max-width: 1300px; margin: 0 auto; }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--b400); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  /* ── Row layout ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  /* ── Step node ── */
+  .step {
+    background: var(--white);
+    border: 1.5px solid var(--b100);
+    border-radius: 12px;
+    padding: 14px 16px;
+    min-width: 148px;
+    max-width: 165px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(37,99,235,0.07);
+    position: relative;
+    transition: box-shadow 0.2s;
+  }
+  .step:hover { box-shadow: 0 4px 16px rgba(37,99,235,0.13); }
+
+  .step-num {
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    color: var(--b400); letter-spacing: 1px; margin-bottom: 6px;
+  }
+  .step-icon { font-size: 22px; display: block; margin-bottom: 6px; }
+  .step-name {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--b800); margin-bottom: 4px;
+  }
+  .step-desc { font-size: 10.5px; color: var(--slate); line-height: 1.5; margin-bottom: 8px; }
+  .step-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tag {
+    font-family: var(--mono); font-size: 9px; font-weight: 500;
+    padding: 2px 6px; border-radius: 3px;
+    background: var(--b50); color: var(--b600); border: 1px solid var(--b100);
+  }
+  .tag-g { background: var(--green-bg); color: var(--green);  border-color: var(--green-bd); }
+  .tag-a { background: var(--amber-bg); color: var(--amber);  border-color: var(--amber-bd); }
+  .tag-r { background: var(--red-bg);   color: var(--red);    border-color: var(--red-bd);   }
+
+  /* ── Decision diamond ── */
+  .diamond-wrap {
+    display: flex; flex-direction: column;
+    align-items: center; flex-shrink: 0; margin: 0 4px;
+  }
+  .diamond {
+    width: 64px; height: 64px;
+    background: var(--b900);
+    transform: rotate(45deg);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 12px rgba(10,22,40,0.18);
+  }
+  .diamond-inner {
+    transform: rotate(-45deg);
+    text-align: center;
+  }
+  .diamond-icon { font-size: 18px; display: block; }
+  .diamond-text {
+    font-family: var(--mono); font-size: 8px; font-weight: 700;
+    color: var(--b300); display: block; letter-spacing: 0.5px; margin-top: 2px;
+  }
+  .diamond-label {
+    font-family: var(--mono); font-size: 9px; color: var(--slate);
+    margin-top: 6px; letter-spacing: 0.5px; text-align: center;
+  }
+
+  /* ── Arrow ── */
+  .arrow {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 0 4px; flex-shrink: 0; gap: 3px;
+  }
+  .arrow-line {
+    height: 1.5px; width: 32px;
+    background: var(--b400); position: relative;
+  }
+  .arrow-line::after {
+    content: '';
+    position: absolute; right: -5px; top: 50%; transform: translateY(-50%);
+    border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+    border-left: 6px solid var(--b400);
+  }
+  .arrow-lbl {
+    font-family: var(--mono); font-size: 8.5px; color: var(--b300);
+    white-space: nowrap; letter-spacing: 0.4px;
+  }
+
+  /* ── Down arrow between rows ── */
+  .down-arrow {
+    display: flex; flex-direction: column; align-items: center;
+    margin: 4px 0; gap: 2px;
+  }
+  .down-line {
+    width: 1.5px; height: 28px;
+    background: linear-gradient(180deg, var(--b400), var(--b300));
+    position: relative;
+  }
+  .down-line::after {
+    content: '';
+    position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 6px solid var(--b400);
+  }
+  .down-lbl {
+    font-family: var(--mono); font-size: 9px; color: var(--slate);
+    background: var(--white); padding: 2px 8px; border-radius: 3px;
+    border: 1px solid var(--line); letter-spacing: 0.5px;
+  }
+
+  /* ── Branch container ── */
+  .branch-row {
+    display: flex; align-items: flex-start; gap: 14px;
+    margin-bottom: 6px;
+  }
+  .branch-col {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    flex: 1;
+  }
+  .branch-label {
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 3px 10px; border-radius: 4px; margin-bottom: 4px;
+  }
+  .branch-yes  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+  .branch-no   { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd);   }
+  .branch-back { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+
+  /* ── Outcome terminal ── */
+  .terminal {
+    border-radius: 10px; padding: 12px 16px;
+    border: 1.5px solid; min-width: 148px; flex-shrink: 0;
+  }
+  .terminal-success { background: var(--green-bg); border-color: var(--green-bd); }
+  .terminal-warn    { background: var(--amber-bg); border-color: var(--amber-bd); }
+  .terminal-end     { background: var(--b900);     border-color: var(--b700);     }
+
+  .terminal-icon { font-size: 18px; display: block; margin-bottom: 6px; }
+  .terminal-name {
+    font-family: var(--mono); font-size: 11px; font-weight: 700; margin-bottom: 3px;
+  }
+  .terminal-success .terminal-name { color: var(--green); }
+  .terminal-warn    .terminal-name { color: var(--amber); }
+  .terminal-end     .terminal-name { color: var(--b300);  }
+  .terminal-desc { font-size: 10.5px; line-height: 1.5; }
+  .terminal-success .terminal-desc { color: #166534; }
+  .terminal-warn    .terminal-desc { color: #92400E; }
+  .terminal-end     .terminal-desc { color: #94A3B8; }
+
+  /* ── System node (dark) ── */
+  .sys-node {
+    background: var(--b900); border: 1px solid var(--b700);
+    border-radius: 10px; padding: 12px 14px;
+    min-width: 140px; flex-shrink: 0; text-align: center;
+  }
+  .sys-icon  { font-size: 18px; display: block; margin-bottom: 5px; }
+  .sys-name  { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--b300); margin-bottom: 3px; }
+  .sys-desc  { font-size: 10px; color: #94A3B8; }
+
+  /* ── Horizontal separator ── */
+  .sep { height: 1px; background: var(--line); margin: 20px 0; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    margin-bottom: 32px; padding: 16px 20px;
+    background: var(--white); border-radius: 10px;
+    border: 1px solid var(--b100);
+  }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--slate); }
+  .legend-swatch {
+    width: 28px; height: 16px; border-radius: 4px; border: 1.5px solid;
+    flex-shrink: 0;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center; margin-top: 52px;
+    font-family: var(--mono); font-size: 11px; color: var(--b300); letter-spacing: 1px;
+  }
+
+  .gap    { height: 6px; }
+  .gap-lg { height: 16px; }
+  .gap-xl { height: 28px; }
+
+  /* ── Full width dark flow strip ── */
+  .dark-strip {
+    background: var(--b900); border-radius: 14px;
+    padding: 24px 28px; margin: 20px 0;
+  }
+  .dark-strip-title {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 2px; color: var(--b300); text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .dark-flow { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; overflow-x: auto; }
+  .dark-step {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 12px 14px; min-width: 128px; flex-shrink: 0; text-align: center;
+  }
+  .dark-step-icon { font-size: 18px; display: block; margin-bottom: 5px; }
+  .dark-step-name { font-family: var(--mono); font-size: 11px; font-weight: 600; color: #E2E8F0; margin-bottom: 3px; }
+  .dark-step-sub  { font-size: 10px; color: #94A3B8; }
+  .dark-arrow { padding: 0 5px; flex-shrink: 0; }
+  .dark-arrow svg { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">User Flow Diagram — v1.0</div>
+  <h1>FreightMind — Complete User Journey</h1>
+  <p>All interaction paths across 7 pages · Decision points · System responses · Feedback loops</p>
+</div>
+
+<div class="canvas">
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#EFF6FF;border-color:#93C5FD;"></div> User Action / Page
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#0A1628;border-color:#1A3A6E;"></div> Decision Point
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#F0FDF4;border-color:#BBF7D0;"></div> Success Outcome
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#FFFBEB;border-color:#FDE68A;"></div> Warning / Alternative Path
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#FFF1F2;border-color:#FECDD3;"></div> Error / Retry Path
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#0A1628;border-color:#3B82F6;"></div> System / AI Response
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- FLOW 1: APP ENTRY -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="section-label">Flow 1 — Application Entry</div>
+
+  <div class="flow-row">
+    <div class="step">
+      <div class="step-num">START</div>
+      <span class="step-icon">🌐</span>
+      <div class="step-name">Open Browser</div>
+      <div class="step-desc">User navigates to localhost:5173. Vite serves the React SPA.</div>
+      <div class="step-tags"><span class="tag">localhost:5173</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">page load</div></div>
+
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">📡</span>
+      <div class="step-name">Backend Check</div>
+      <div class="step-desc">Frontend calls GET /api/health to verify backend is running and model is loaded.</div>
+      <div class="step-tags"><span class="tag">GET /api/health</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">200 OK</div></div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">📊</span>
+      <div class="step-name">Dashboard Load</div>
+      <div class="step-desc">GET /api/dashboard fetches KPIs, top carriers, monthly trend, and top lanes in one call.</div>
+      <div class="step-tags"><span class="tag">GET /api/dashboard</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">render</div></div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">🖥</span>
+      <div class="step-name">Dashboard View</div>
+      <div class="step-desc">User sees KPI cards, trend line chart, top carrier bar chart, and recent shipments table.</div>
+      <div class="step-tags"><span class="tag-g">Ready</span><span class="tag">8 KPIs</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">navigate</div></div>
+
+    <div class="diamond-wrap">
+      <div class="diamond">
+        <div class="diamond-inner">
+          <span class="diamond-icon">🔀</span>
+          <span class="diamond-text">PAGE?</span>
+        </div>
+      </div>
+      <div class="diamond-label">User selects<br/>next action</div>
+    </div>
+  </div>
+
+  <div class="gap-xl"></div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- FLOW 2: NEW SHIPMENT -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="section-label">Flow 2 — New Shipment & AI Recommendations</div>
+
+  <div class="flow-row">
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">🚛</span>
+      <div class="step-name">New Shipment</div>
+      <div class="step-desc">User clicks "New Shipment" in nav. Form renders with origin, destination, weight, priority, vehicle, industry fields.</div>
+      <div class="step-tags"><span class="tag">6 Fields</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">fill form</div></div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">✏️</span>
+      <div class="step-name">Input Details</div>
+      <div class="step-desc">Selects origin city, destination city. System auto-computes distance_km from lookup table. Enters weight, chooses priority and vehicle type.</div>
+      <div class="step-tags"><span class="tag">Auto distance</span><span class="tag">20 cities</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">submit</div></div>
+
+    <div class="diamond-wrap">
+      <div class="diamond">
+        <div class="diamond-inner">
+          <span class="diamond-icon">✅</span>
+          <span class="diamond-text">VALID?</span>
+        </div>
+      </div>
+      <div class="diamond-label">All required<br/>fields filled?</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">yes → POST</div></div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">🧠</span>
+      <div class="step-name">AI Processing</div>
+      <div class="step-desc">POST /api/recommend. scorer.py builds 12-feature vector per carrier. XGBoost predicts score. SHAP computes explanation.</div>
+      <div class="step-tags"><span class="tag">POST /api/recommend</span><span class="tag">XGBoost</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">ranked JSON</div></div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <span class="step-icon">📋</span>
+      <div class="step-name">Results Render</div>
+      <div class="step-desc">Up to 15 CarrierCard components rendered, sorted by composite score. Market rate displayed. Each card shows score, risk, on-time rate, and bid price.</div>
+      <div class="step-tags"><span class="tag-g">Ranked</span><span class="tag">15 carriers</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">click card</div></div>
+
+    <div class="step">
+      <div class="step-num">05</div>
+      <span class="step-icon">💡</span>
+      <div class="step-name">Detail Expand</div>
+      <div class="step-desc">User clicks a CarrierCard. FactorChart appears showing SHAP breakdown. Negotiation signal shown if bid exceeds market rate by 10%.</div>
+      <div class="step-tags"><span class="tag">SHAP Chart</span><span class="tag-a">Neg. Signal</span></div>
+    </div>
+  </div>
+
+  <!-- Validation error branch -->
+  <div class="gap"></div>
+  <div style="display:flex;align-items:flex-start;gap:12px;padding-left:330px;">
+    <div class="down-arrow">
+      <div class="down-line"></div>
+      <div class="down-lbl">no → error</div>
+    </div>
+    <div class="terminal terminal-warn" style="max-width:200px;">
+      <span class="terminal-icon">⚠️</span>
+      <div class="terminal-name">Validation Error</div>
+      <div class="terminal-desc">Red error message shown. Same origin and destination blocked. User corrects fields and resubmits.</div>
+    </div>
+  </div>
+
+  <div class="gap-xl"></div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- FLOW 3: CARRIER SCORECARD -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="section-label">Flow 3 — Carrier Scorecard</div>
+
+  <div class="flow-row">
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">◎</span>
+      <div class="step-name">Carriers Page</div>
+      <div class="step-desc">GET /api/carriers loads all 15 carrier profiles into the left-hand list panel. Sorted by avg_score descending.</div>
+      <div class="step-tags"><span class="tag">GET /api/carriers</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">click carrier</div></div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">🔍</span>
+      <div class="step-name">Select Carrier</div>
+      <div class="step-desc">User clicks a carrier from the list. GET /api/carrier/{id} fetches full profile, monthly performance, top lanes, and SHAP explanation.</div>
+      <div class="step-tags"><span class="tag">GET /api/carrier/{id}</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">render</div></div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">📈</span>
+      <div class="step-name">Scorecard View</div>
+      <div class="step-desc">Score gauge, 6 stat cards, performance trend line chart, radar chart across 5 dimensions, top lanes chips, and AI explanation panel all render.</div>
+      <div class="step-tags"><span class="tag-g">Full Profile</span><span class="tag">Radar</span><span class="tag">SHAP</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">compare</div></div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <span class="step-icon">🔄</span>
+      <div class="step-name">Switch Carrier</div>
+      <div class="step-desc">User clicks a different carrier in the list. Previous scorecard is replaced. New API call fetches updated data for selected carrier.</div>
+      <div class="step-tags"><span class="tag">Re-fetch</span><span class="tag">Side-by-side compare</span></div>
+    </div>
+  </div>
+
+  <div class="gap-xl"></div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- FLOW 4: BID COMPARISON -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="section-label">Flow 4 — Bid Comparison Engine</div>
+
+  <div class="flow-row">
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">⊞</span>
+      <div class="step-name">Bid Compare</div>
+      <div class="step-desc">User navigates to Bid Compare. Sets lane details: origin, destination, weight, priority, vehicle. Minimum 2 carrier bids required.</div>
+      <div class="step-tags"><span class="tag">Min 2 bids</span><span class="tag">Max unlimited</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">add bids</div></div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">➕</span>
+      <div class="step-name">Enter Bids</div>
+      <div class="step-desc">User selects carrier from dropdown, enters bid price in INR per row. Clicks "+ Add Carrier" to add more rows. Each row is a carrier-bid pair.</div>
+      <div class="step-tags"><span class="tag">INR Input</span><span class="tag">Dynamic rows</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">compare</div></div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">🧠</span>
+      <div class="step-name">AI Analysis</div>
+      <div class="step-desc">POST /api/compare-bids. Each carrier scored via XGBoost. Price ratio vs market rate computed. Carriers ranked by composite of score and bid.</div>
+      <div class="step-tags"><span class="tag">POST /api/compare-bids</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">ranked table</div></div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <span class="step-icon">📊</span>
+      <div class="step-name">Results Table</div>
+      <div class="step-desc">Comparison table shows rank badge, carrier, bid price, % vs market rate, composite score, risk badge, on-time %, and negotiation flag per row.</div>
+      <div class="step-tags"><span class="tag-g">Ranked</span><span class="tag-a">Neg. flags</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">click row</div></div>
+
+    <div class="step">
+      <div class="step-num">05</div>
+      <span class="step-icon">💰</span>
+      <div class="step-name">Detail Panel</div>
+      <div class="step-desc">Clicking a table row expands FactorChart below. If negotiation signal active, shows exact savings in INR and recommended target price.</div>
+      <div class="step-tags"><span class="tag">SHAP</span><span class="tag-a">₹ Savings</span></div>
+    </div>
+  </div>
+
+  <div class="gap-xl"></div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- FLOW 5: AWARD SIMULATION -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="section-label">Flow 5 — Award Split Simulation</div>
+
+  <div class="flow-row">
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">⟁</span>
+      <div class="step-name">Award Sim</div>
+      <div class="step-desc">User selects Carrier A and Carrier B from dropdowns. Enters distance and weight. Clicks "Run Simulation".</div>
+      <div class="step-tags"><span class="tag">2 carriers</span><span class="tag">POST /api/simulate-award</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">API call</div></div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">📉</span>
+      <div class="step-name">Range Sweep</div>
+      <div class="step-desc">Backend sweeps split_pct from 10 to 90 in steps of 10. Computes blended_score, blended_ontime_pct, expected_cost_inr at each ratio. Returns full array.</div>
+      <div class="step-tags"><span class="tag">9 data points</span><span class="tag">Weighted avg</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">render</div></div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">🎚</span>
+      <div class="step-name">Slider Appears</div>
+      <div class="step-desc">Split slider rendered from 10% to 90%. Blended score, expected on-time %, and expected cost shown. AI recommendation text generated based on optimal split.</div>
+      <div class="step-tags"><span class="tag-g">Live metrics</span><span class="tag">AI rec.</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">drag slider</div></div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <span class="step-icon">🔁</span>
+      <div class="step-name">Real-Time Update</div>
+      <div class="step-desc">Each slider drag triggers new POST /api/simulate-award call. Metrics update instantly. Line chart re-renders to highlight selected split with reference line.</div>
+      <div class="step-tags"><span class="tag">Re-fetch on change</span><span class="tag">ReferenceLine</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">confirm split</div></div>
+
+    <div class="step">
+      <div class="step-num">05</div>
+      <span class="step-icon">✅</span>
+      <div class="step-name">Decision Made</div>
+      <div class="step-desc">User reads AI recommendation and negotiation flags per carrier panel. Proceeds to award carrier based on blended risk and cost insight.</div>
+      <div class="step-tags"><span class="tag-g">Outcome</span></div>
+    </div>
+  </div>
+
+  <div class="gap-xl"></div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- FLOW 6: LANE MAP -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="section-label">Flow 6 — Lane Intelligence Map</div>
+
+  <div class="flow-row">
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">⊕</span>
+      <div class="step-name">Lane Map Page</div>
+      <div class="step-desc">Leaflet.js initialises. CartoDB Dark Matter tiles load. GET /api/lanes fetches all lane records from backend.</div>
+      <div class="step-tags"><span class="tag">Leaflet</span><span class="tag">GET /api/lanes</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">tiles + data</div></div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">🗺</span>
+      <div class="step-name">Map Renders</div>
+      <div class="step-desc">Up to 60 polylines drawn. Green = Low risk, Amber = Medium, Red = High (dashed). City dots placed at real lat/lng coordinates. Map centered on India.</div>
+      <div class="step-tags"><span class="tag">60 routes</span><span class="tag">Risk colors</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">filter / search</div></div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">🔎</span>
+      <div class="step-name">Filter & Search</div>
+      <div class="step-desc">User filters by risk level (All / Low / Medium / High). Search box filters by lane code or city name. Lane list and map routes update simultaneously.</div>
+      <div class="step-tags"><span class="tag">Client filter</span><span class="tag">Real-time</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">click route</div></div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <span class="step-icon">📍</span>
+      <div class="step-name">Route Selected</div>
+      <div class="step-desc">Clicked polyline highlights blue. Map flies to route midpoint at zoom 6. Popup shows score, on-time %, trips, risk, and top carrier. Detail box updates in list panel.</div>
+      <div class="step-tags"><span class="tag-g">Popup</span><span class="tag">flyTo()</span></div>
+    </div>
+  </div>
+
+  <div class="gap-xl"></div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- FLOW 7: FEEDBACK LOOP -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="section-label">Flow 7 — Feedback Loop and Model Improvement</div>
+
+  <div class="flow-row">
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">◇</span>
+      <div class="step-name">Feedback Page</div>
+      <div class="step-desc">GET /api/feedback loads existing feedback history. Stats strip shows total, on-time, delayed, and issues counts.</div>
+      <div class="step-tags"><span class="tag">GET /api/feedback</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">fill form</div></div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">📝</span>
+      <div class="step-name">Submit Outcome</div>
+      <div class="step-desc">User enters shipment ID, selects carrier, picks outcome (On Time / Delayed / Damaged / Lost), selects star rating 1–5, and optionally adds comment.</div>
+      <div class="step-tags"><span class="tag">4 outcomes</span><span class="tag">5-star rating</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">POST</div></div>
+
+    <div class="diamond-wrap">
+      <div class="diamond">
+        <div class="diamond-inner">
+          <span class="diamond-icon">📋</span>
+          <span class="diamond-text">VALID?</span>
+        </div>
+      </div>
+      <div class="diamond-label">Shipment ID<br/>+ carrier filled?</div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">yes</div></div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">💾</span>
+      <div class="step-name">Stored</div>
+      <div class="step-desc">POST /api/feedback. Record stored in-memory. Success banner confirms submission. Feedback history list updates. Stats strip recalculated.</div>
+      <div class="step-tags"><span class="tag-g">Confirmed</span><span class="tag">POST /api/feedback</span></div>
+    </div>
+
+    <div class="arrow"><div class="arrow-line"></div><div class="arrow-lbl">accumulates</div></div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <span class="step-icon">🔁</span>
+      <div class="step-name">Model Retraining</div>
+      <div class="step-desc">Accumulated feedback labels used as additional training signal. Admin re-runs model.py with feedback-enriched dataset. New model.pkl replaces old one. Server hot-reloads via Uvicorn.</div>
+      <div class="step-tags"><span class="tag-a">Continuous Learning</span><span class="tag">model.py</span></div>
+    </div>
+  </div>
+
+  <div class="gap-xl"></div>
+
+  <!-- ───────────────────────────────────────────── -->
+  <!-- COMPLETE NAVIGATION FLOW (dark strip) -->
+  <!-- ───────────────────────────────────────────── -->
+  <div class="dark-strip">
+    <div class="dark-strip-title">Complete Navigation Map — All 7 Pages</div>
+    <div class="dark-flow">
+
+      <div class="dark-step">
+        <span class="dark-step-icon">📊</span>
+        <div class="dark-step-name">Dashboard</div>
+        <div class="dark-step-sub">KPIs · Trends · Top Carriers</div>
+      </div>
+      <div class="dark-arrow">
+        <svg width="28" height="12" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="dark-step">
+        <span class="dark-step-icon">🚛</span>
+        <div class="dark-step-name">New Shipment</div>
+        <div class="dark-step-sub">Input · AI Rank · SHAP</div>
+      </div>
+      <div class="dark-arrow">
+        <svg width="28" height="12" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="dark-step">
+        <span class="dark-step-icon">◎</span>
+        <div class="dark-step-name">Carrier Scorecard</div>
+        <div class="dark-step-sub">Profile · Radar · Trend</div>
+      </div>
+      <div class="dark-arrow">
+        <svg width="28" height="12" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="dark-step">
+        <span class="dark-step-icon">⊞</span>
+        <div class="dark-step-name">Bid Compare</div>
+        <div class="dark-step-sub">Multi-bid · Rank · Negotiate</div>
+      </div>
+      <div class="dark-arrow">
+        <svg width="28" height="12" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="dark-step">
+        <span class="dark-step-icon">⟁</span>
+        <div class="dark-step-name">Award Sim</div>
+        <div class="dark-step-sub">Split slider · Blended risk</div>
+      </div>
+      <div class="dark-arrow">
+        <svg width="28" height="12" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="dark-step">
+        <span class="dark-step-icon">⊕</span>
+        <div class="dark-step-name">Lane Map</div>
+        <div class="dark-step-sub">Leaflet · Routes · Risk</div>
+      </div>
+      <div class="dark-arrow">
+        <svg width="28" height="12" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="dark-step">
+        <span class="dark-step-icon">◇</span>
+        <div class="dark-step-name">Feedback Loop</div>
+        <div class="dark-step-sub">Outcome · Rating · Retrain</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end canvas -->
+
+<div class="footer">
+  FreightMind &nbsp;·&nbsp; User Flow Diagram v1.0 &nbsp;·&nbsp; LogisticsNow LoRRI AI Hackathon Round 2
+</div>
+
+</body>
+</html>
