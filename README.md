@@ -2,9 +2,11 @@
 
 AI-powered carrier selection and procurement intelligence platform for logistics teams. Built for the LogisticsNow LoRRI AI Hackathon Round 2.
 
+
 ## Overview
 
 FreightMind is a full-stack web application that helps procurement and logistics teams make faster, data-driven carrier selection decisions. The platform uses a machine learning model trained on historical shipment data to score and rank carriers, detect overpriced bids, simulate award splits, and learn continuously from shipment outcomes.
+
 
 ## Features
 
@@ -15,6 +17,7 @@ FreightMind is a full-stack web application that helps procurement and logistics
 - **Lane Intelligence Map** - Interactive India map (Leaflet.js) showing freight route network colored by risk level with lane-level analytics
 - **Feedback Loop** - Mark shipment outcomes to continuously improve model recommendations over time
 - **Dashboard** - KPI overview, top carrier rankings, monthly shipment trend, and top lanes by volume
+
 
 ## Tech Stack
 
@@ -32,6 +35,7 @@ FreightMind is a full-stack web application that helps procurement and logistics
 - Leaflet.js (interactive map)
 - Axios
 - Tailwind CSS utilities
+
 
 ## Project Structure
 
@@ -70,6 +74,7 @@ freightmind/
 │           └── FeedbackLoop.jsx
 ```
 
+
 ## Getting Started
 
 ### Prerequisites
@@ -102,6 +107,7 @@ The frontend will be available at `http://localhost:5173`.
 
 > Both the backend and frontend must be running simultaneously for the application to function.
 
+
 ## API Endpoints
 
 | Method | Endpoint | Description |
@@ -117,6 +123,7 @@ The frontend will be available at `http://localhost:5173`.
 | POST | `/api/feedback` | Submit shipment outcome |
 | GET | `/api/model/importance` | Feature importance scores |
 
+
 ## ML Model
 
 - **Algorithm** - XGBoost Regressor
@@ -125,6 +132,7 @@ The frontend will be available at `http://localhost:5173`.
 - **Features** - On-time rate, damage rate, average delay, service score, fleet size, active lanes, distance, weight, price ratio, priority, vehicle type, carrier type
 - **Explainability** - SHAP values used to generate per-carrier, per-prediction explanations shown in the UI
 
+
 ## Dataset
 
 The synthetic dataset covers:
@@ -132,3 +140,46 @@ The synthetic dataset covers:
 - 20 major Indian cities
 - Industries including FMCG, Pharma, Automotive, Electronics, Textile, and Retail
 - Vehicle types: LCV, MCV, HCV, Trailer, Container
+
+
+## Hackathon Context
+
+- **Event** - LogisticsNow LoRRI AI Hackathon Round 2
+- **Problem Statement** - Carrier Selection Agent in Procurement
+- **Team** - Shortlisted from Round 1 for Round 2 final submission
+- **Submission deadline** - 8 March 2026
+
+
+## License
+
+This project was built for hackathon purposes. All carrier names are used for demonstration only.
+
+
+## Evaluation Criteria Coverage
+
+**Develop a working prototype**
+- Full-stack application running locally with backend and frontend communicating over REST
+- All 7 pages functional and connected to live API endpoints
+- 9 API endpoints serving real scored and ranked data
+- Interactive Swagger documentation available at `/docs`
+
+**Implement AI and Agentic Models with optimization logic**
+- XGBoost model trained on 5,000 shipments achieving R-squared of 0.954 and MAE of 0.92
+- SHAP explainability layer generates per-carrier, per-prediction explanations rendered in the UI
+- Negotiation signal agent automatically detects overpriced bids and quantifies savings in INR
+- Award split optimizer computes blended risk, cost, and on-time rate across all split ratios in real time
+- Feedback loop captures real shipment outcomes and flags data for model retraining
+
+**Build production grade dashboards and interfaces**
+- Professional dark-themed enterprise UI with consistent branding across all pages
+- Dashboard with KPI cards, monthly trend chart, top carrier rankings, and lane volume bar chart
+- Carrier scorecard with radar chart, performance trend line, SHAP explanation panel, and lane breakdown
+- Bid comparison table with normalized rankings, risk badges, and negotiation advice per carrier
+- Interactive Leaflet map with real map tiles, route overlays colored by risk, and popup lane analytics
+
+**Demonstrate measurable improvement**
+- On-time rate and damage rate tracked and displayed per carrier and per lane
+- Negotiation signals show exact overcharge percentage and recommended target price in INR
+- Award simulation quantifies blended score and expected cost change as split ratio changes
+- Carrier scorecard shows monthly on-time and score trends to track improvement over time
+- Feedback loop closes the improvement cycle by feeding real outcomes back into the scoring model
