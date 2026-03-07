@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FreightMind — Technical Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:        #F0F5FF;
+    --white:     #FFFFFF;
+    --blue-900:  #0A1628;
+    --blue-800:  #0F2144;
+    --blue-700:  #1A3A6E;
+    --blue-600:  #1D4ED8;
+    --blue-500:  #2563EB;
+    --blue-400:  #3B82F6;
+    --blue-300:  #60A5FA;
+    --blue-100:  #DBEAFE;
+    --blue-50:   #EFF6FF;
+    --slate:     #64748B;
+    --line:      #BFDBFE;
+    --mono:      'IBM Plex Mono', monospace;
+    --sans:      'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: var(--sans);
+    color: var(--blue-900);
+    min-height: 100vh;
+    padding: 48px 32px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .header-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-500);
+    background: var(--blue-50);
+    border: 1px solid var(--blue-100);
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--blue-900);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--slate);
+    font-weight: 400;
+  }
+
+  /* ── Main canvas ── */
+  .canvas {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── Layer wrapper ── */
+  .layer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .layer-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-400);
+    margin-bottom: 10px;
+    padding-left: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .layer-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* ── Zone (colored band per tier) ── */
+  .zone {
+    border-radius: 16px;
+    border: 1px solid;
+    padding: 24px 28px;
+    margin-bottom: 4px;
+    position: relative;
+  }
+
+  .zone-client   { background: #F8FBFF; border-color: #BFDBFE; }
+  .zone-frontend { background: #EFF6FF; border-color: #93C5FD; }
+  .zone-api      { background: #DBEAFE; border-color: #60A5FA; }
+  .zone-service  { background: #EFF6FF; border-color: #93C5FD; }
+  .zone-ml       { background: #F0F9FF; border-color: #7DD3FC; }
+  .zone-data     { background: #F8FBFF; border-color: #BFDBFE; }
+
+  .zone-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--blue-600);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .zone-title-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue-500);
+  }
+
+  /* ── Node grid ── */
+  .node-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Node card ── */
+  .node {
+    background: var(--white);
+    border: 1px solid var(--blue-100);
+    border-radius: 10px;
+    padding: 14px 16px;
+    min-width: 160px;
+    flex: 1;
+    position: relative;
+    box-shadow: 0 1px 4px rgba(37,99,235,0.06);
+    transition: box-shadow 0.2s;
+  }
+  .node:hover {
+    box-shadow: 0 4px 16px rgba(37,99,235,0.12);
+  }
+
+  .node-icon {
+    font-size: 18px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .node-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue-800);
+    margin-bottom: 4px;
+  }
+
+  .node-desc {
+    font-size: 11px;
+    color: var(--slate);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .node-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: var(--blue-50);
+    color: var(--blue-600);
+    border: 1px solid var(--blue-100);
+  }
+  .tag-green { background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }
+  .tag-amber { background: #FFFBEB; color: #B45309; border-color: #FDE68A; }
+  .tag-red   { background: #FFF1F2; color: #BE123C; border-color: #FECDD3; }
+
+  /* ── Arrow connectors ── */
+  .arrow-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: 8px 0;
+    position: relative;
+  }
+
+  .arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 120px;
+  }
+
+  .arrow-line {
+    width: 1px;
+    height: 24px;
+    background: linear-gradient(180deg, var(--blue-400), var(--blue-300));
+    position: relative;
+  }
+  .arrow-line::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid var(--blue-400);
+  }
+
+  .arrow-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--blue-400);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    background: var(--white);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  /* ── Horizontal flow ── */
+  .h-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .h-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  .h-arrow-line {
+    height: 1px;
+    width: 32px;
+    background: var(--blue-400);
+    position: relative;
+  }
+  .h-arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid var(--blue-400);
+  }
+
+  /* ── Data flow diagram (main horizontal) ── */
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 8px 0;
+  }
+
+  .flow-node {
+    background: var(--white);
+    border: 1.5px solid var(--blue-300);
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 130px;
+    flex-shrink: 0;
+  }
+  .flow-node-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+  .flow-node-name { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--blue-800); }
+  .flow-node-sub  { font-size: 10px; color: var(--slate); margin-top: 2px; }
+
+  .flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 4px;
+    flex-shrink: 0;
+    gap: 2px;
+  }
+  .flow-arrow-line {
+    height: 1px;
+    width: 36px;
+    background: var(--blue-400);
+    position: relative;
+  }
+  .flow-arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid var(--blue-400);
+  }
+  .flow-arrow-lbl {
+    font-family: var(--mono);
+    font-size: 8.5px;
+    color: var(--slate);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Bidirectional arrow ── */
+  .bidir .flow-arrow-line::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-right: 6px solid var(--blue-400);
+  }
+
+  /* ── Wide connector ── */
+  .connector-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 4px 60px;
+    position: relative;
+  }
+  .connector-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .connector-drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .connector-drop-line {
+    width: 1px;
+    height: 20px;
+    background: var(--line);
+    position: relative;
+  }
+  .connector-drop-line::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 5px solid var(--blue-300);
+  }
+  .connector-drop-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--blue-300);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Security / infra badges ── */
+  .infra-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .infra-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--blue-900);
+    color: var(--blue-300);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Metrics strip ── */
+  .metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  .metric-card {
+    background: var(--white);
+    border: 1px solid var(--blue-100);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .metric-val {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue-600);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .metric-lbl {
+    font-size: 10px;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue-300);
+    letter-spacing: 1px;
+  }
+
+  /* ── Section gap ── */
+  .gap { height: 6px; }
+  .gap-lg { height: 12px; }
+
+  /* ── Full-width request flow section ── */
+  .req-flow {
+    background: var(--blue-900);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin: 24px 0;
+  }
+  .req-flow-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--blue-300);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .req-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .req-step {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 12px 14px;
+    min-width: 120px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .req-step-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--blue-400);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .req-step-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #E2E8F0;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+  .req-step-sub {
+    font-size: 10px;
+    color: #94A3B8;
+  }
+  .req-arrow {
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+  .req-arrow-svg {
+    width: 28px;
+    height: 12px;
+  }
+
+  @media print {
+    body { padding: 20px; background: white; }
+    .node:hover { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">Technical Architecture Document</div>
+  <h1>FreightMind — System Architecture</h1>
+  <p>AI-Powered Carrier Selection and Procurement Intelligence Platform &nbsp;·&nbsp; LogisticsNow LoRRI Hackathon Round 2</p>
+</div>
+
+<div class="canvas">
+
+  <!-- METRICS STRIP -->
+  <div class="metrics-strip">
+    <div class="metric-card"><span class="metric-val">0.954</span><div class="metric-lbl">Model R²</div></div>
+    <div class="metric-card"><span class="metric-val">0.92</span><div class="metric-lbl">MAE</div></div>
+    <div class="metric-card"><span class="metric-val">5,000</span><div class="metric-lbl">Training Samples</div></div>
+    <div class="metric-card"><span class="metric-val">9</span><div class="metric-lbl">API Endpoints</div></div>
+    <div class="metric-card"><span class="metric-val">380</span><div class="metric-lbl">Lanes</div></div>
+    <div class="metric-card"><span class="metric-val">12</span><div class="metric-lbl">ML Features</div></div>
+  </div>
+
+  <!-- LAYER 1: CLIENT -->
+  <div class="layer-label">Layer 1 — Client</div>
+  <div class="zone zone-client">
+    <div class="zone-title"><div class="zone-title-dot"></div>Browser / User Interface</div>
+    <div class="node-grid">
+      <div class="node">
+        <span class="node-icon">🖥</span>
+        <div class="node-name">React 18 + Vite</div>
+        <div class="node-desc">SPA served at localhost:5173. Component-based UI with React Router for client-side navigation across 7 pages.</div>
+        <div class="node-tags"><span class="tag">JSX</span><span class="tag">Vite 5</span><span class="tag">HMR</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">📊</span>
+        <div class="node-name">Recharts</div>
+        <div class="node-desc">Renders LineChart, BarChart, RadarChart, and custom SVG gauge. All charts are responsive via ResponsiveContainer.</div>
+        <div class="node-tags"><span class="tag">SVG</span><span class="tag">Responsive</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🗺</span>
+        <div class="node-name">Leaflet.js</div>
+        <div class="node-desc">Interactive India map with CartoDB Dark Matter tile layer. Polyline overlays colored by risk level. City markers with tooltips.</div>
+        <div class="node-tags"><span class="tag">Tiles</span><span class="tag">Polyline</span><span class="tag">Popup</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🔄</span>
+        <div class="node-name">Axios HTTP Client</div>
+        <div class="node-desc">All API calls made via Axios to FastAPI backend at localhost:8000. Handles JSON serialisation, error catching, and async state updates.</div>
+        <div class="node-tags"><span class="tag">REST</span><span class="tag">Async</span><span class="tag">JSON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARROW 1→2 -->
+  <div class="arrow-section">
+    <div class="arrow-col">
+      <div class="arrow-label">HTTP / JSON — POST /api/recommend</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">HTTP / JSON — GET /api/dashboard</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">HTTP / JSON — POST /api/compare-bids</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">HTTP / JSON — POST /api/simulate-award</div>
+      <div class="arrow-line"></div>
+    </div>
+  </div>
+
+  <!-- LAYER 2: API GATEWAY -->
+  <div class="layer-label">Layer 2 — API Gateway</div>
+  <div class="zone zone-api">
+    <div class="zone-title"><div class="zone-title-dot"></div>FastAPI Application Server — localhost:8000</div>
+    <div class="node-grid">
+      <div class="node">
+        <span class="node-icon">⚡</span>
+        <div class="node-name">FastAPI + Uvicorn</div>
+        <div class="node-desc">ASGI server with automatic OpenAPI schema generation. All routes decorated with type-validated Pydantic models. Swagger UI at /docs.</div>
+        <div class="node-tags"><span class="tag">ASGI</span><span class="tag">Pydantic</span><span class="tag">OpenAPI</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🔀</span>
+        <div class="node-name">CORS Middleware</div>
+        <div class="node-desc">CORSMiddleware allows requests from localhost:5173. Configured for all HTTP methods required by the frontend.</div>
+        <div class="node-tags"><span class="tag">CORS</span><span class="tag">Middleware</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">📋</span>
+        <div class="node-name">Route Handlers (main.py)</div>
+        <div class="node-desc">9 route handlers. Each validates incoming request body, delegates to scorer/explainer services, and returns structured JSON response.</div>
+        <div class="node-tags"><span class="tag">9 Routes</span><span class="tag">Validation</span><span class="tag">JSON</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🛡</span>
+        <div class="node-name">Request / Response Models</div>
+        <div class="node-desc">Pydantic BaseModel classes enforce type safety on all inputs and outputs. ShipmentRequest, BidRequest, SimulationRequest, FeedbackRequest.</div>
+        <div class="node-tags"><span class="tag">BaseModel</span><span class="tag">Type Safety</span></div>
+      </div>
+    </div>
+    <div class="infra-row">
+      <span class="infra-badge">GET /api/health</span>
+      <span class="infra-badge">GET /api/dashboard</span>
+      <span class="infra-badge">POST /api/recommend</span>
+      <span class="infra-badge">GET /api/carriers</span>
+      <span class="infra-badge">GET /api/carrier/{id}</span>
+      <span class="infra-badge">POST /api/compare-bids</span>
+      <span class="infra-badge">POST /api/simulate-award</span>
+      <span class="infra-badge">GET /api/lanes</span>
+      <span class="infra-badge">POST /api/feedback</span>
+    </div>
+  </div>
+
+  <!-- ARROW 2→3 -->
+  <div class="arrow-section">
+    <div class="arrow-col">
+      <div class="arrow-label">Feature vector construction</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">Carrier stats aggregation</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">SHAP value computation</div>
+      <div class="arrow-line"></div>
+    </div>
+  </div>
+
+  <!-- LAYER 3: SERVICE -->
+  <div class="layer-label">Layer 3 — Business Logic Services</div>
+  <div class="zone zone-service">
+    <div class="zone-title"><div class="zone-title-dot"></div>Core Service Modules</div>
+    <div class="node-grid">
+      <div class="node">
+        <span class="node-icon">⚙</span>
+        <div class="node-name">scorer.py</div>
+        <div class="node-desc">Builds 12-feature vector per carrier. Calls model.predict(). Computes price_ratio vs market_rate. Applies priority and vehicle type encoding. Returns ranked list with composite scores.</div>
+        <div class="node-tags"><span class="tag">Feature Eng.</span><span class="tag">Ranking</span><span class="tag">Normalisation</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">💡</span>
+        <div class="node-name">explainer.py</div>
+        <div class="node-desc">Uses SHAP TreeExplainer on the loaded XGBoost model. Generates per-prediction SHAP values. Maps values to human-readable impact labels (positive / negative / neutral).</div>
+        <div class="node-tags"><span class="tag">SHAP</span><span class="tag">TreeExplainer</span><span class="tag">XAI</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">📡</span>
+        <div class="node-name">Negotiation Signal Engine</div>
+        <div class="node-desc">Computes bid_price / market_rate ratio. If ratio exceeds threshold (1.10), flags negotiation signal, calculates savings in INR, and recommends target price.</div>
+        <div class="node-tags"><span class="tag-amber">Threshold Logic</span><span class="tag">INR Calc</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">⟁</span>
+        <div class="node-name">Award Simulation Engine</div>
+        <div class="node-desc">Iterates split_pct from 10 to 90 in steps of 10. For each split, computes weighted blended_score, blended_ontime_pct, expected_cost_inr between two carriers. Returns full range array.</div>
+        <div class="node-tags"><span class="tag">Weighted Avg</span><span class="tag">Range Sweep</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARROW 3→4 -->
+  <div class="arrow-section">
+    <div class="arrow-col">
+      <div class="arrow-label">model.predict(feature_vector)</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">shap_values = explainer(X)</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">joblib.load(model.pkl)</div>
+      <div class="arrow-line"></div>
+    </div>
+  </div>
+
+  <!-- LAYER 4: ML -->
+  <div class="layer-label">Layer 4 — Machine Learning</div>
+  <div class="zone zone-ml">
+    <div class="zone-title"><div class="zone-title-dot"></div>ML Model Layer</div>
+    <div class="node-grid">
+      <div class="node">
+        <span class="node-icon">🧠</span>
+        <div class="node-name">XGBoost Regressor</div>
+        <div class="node-desc">Trained on 5,000 historical shipments. Target variable: carrier_score (0–100). 80/20 train-test split. Serialised to model.pkl via joblib. Auto-loaded at server startup.</div>
+        <div class="node-tags"><span class="tag-green">R² 0.954</span><span class="tag-green">MAE 0.92</span><span class="tag">joblib</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🔢</span>
+        <div class="node-name">Feature Engineering (12 Features)</div>
+        <div class="node-desc">on_time_rate_pct, damage_rate_pct, avg_delay_days, service_score_10, fleet_size, active_lanes, distance_km, weight_kg, price_ratio, priority_encoded, vehicle_encoded, carrier_type_encoded</div>
+        <div class="node-tags"><span class="tag">LabelEncoder</span><span class="tag">encoders.pkl</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🔍</span>
+        <div class="node-name">SHAP Explainability</div>
+        <div class="node-desc">TreeExplainer computes Shapley values per prediction. Top 5 features extracted and mapped to impact direction. Rendered as explanation panel in Carrier Scorecard UI.</div>
+        <div class="node-tags"><span class="tag">Shapley Values</span><span class="tag">XAI</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🔁</span>
+        <div class="node-name">Feedback Retraining Signal</div>
+        <div class="node-desc">POST /api/feedback stores outcome labels (on_time / delayed / damaged / lost). Accumulated feedback data acts as retraining signal. model.py re-run incorporates new labels.</div>
+        <div class="node-tags"><span class="tag-amber">Continuous Learning</span><span class="tag">Outcome Labels</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARROW 4→5 -->
+  <div class="arrow-section">
+    <div class="arrow-col">
+      <div class="arrow-label">pd.read_csv(carriers.csv)</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">pd.read_csv(shipments.csv)</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="arrow-col">
+      <div class="arrow-label">groupby(carrier_id).agg(stats)</div>
+      <div class="arrow-line"></div>
+    </div>
+  </div>
+
+  <!-- LAYER 5: DATA -->
+  <div class="layer-label">Layer 5 — Data</div>
+  <div class="zone zone-data">
+    <div class="zone-title"><div class="zone-title-dot"></div>Data Storage Layer</div>
+    <div class="node-grid">
+      <div class="node">
+        <span class="node-icon">📦</span>
+        <div class="node-name">carriers.csv</div>
+        <div class="node-desc">15 Indian carrier profiles. Fields: carrier_id, carrier_name, type, hq, coverage, fleet_size, active_lanes, on_time_rate_pct, damage_rate_pct, service_score_10, iso_certified, risk_level.</div>
+        <div class="node-tags"><span class="tag">15 rows</span><span class="tag">12 cols</span><span class="tag">Static</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">📋</span>
+        <div class="node-name">shipments.csv</div>
+        <div class="node-desc">5,000 synthetic shipments Jan 2023 – Dec 2024. Fields include origin, destination, lane, carrier, vehicle_type, weight_kg, distance_km, bid_price_inr, transit_days, on_time_delivery, carrier_score, risk_level.</div>
+        <div class="node-tags"><span class="tag">5,000 rows</span><span class="tag">20 cols</span><span class="tag">Historical</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🤖</span>
+        <div class="node-name">model.pkl + encoders.pkl</div>
+        <div class="node-desc">Serialised XGBoost model and LabelEncoders for categorical features. Generated by running model.py. Loaded once at server startup and reused across all requests.</div>
+        <div class="node-tags"><span class="tag">joblib</span><span class="tag">Pickle</span><span class="tag">In-Memory</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">💬</span>
+        <div class="node-name">In-Memory Feedback Store</div>
+        <div class="node-desc">Feedback submissions stored in a Python list in-memory during server session. Exposed via GET /api/feedback. Persisted to disk in production extension.</div>
+        <div class="node-tags"><span class="tag-amber">In-Memory</span><span class="tag">List</span><span class="tag">Feedback</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REQUEST FLOW -->
+  <div class="req-flow">
+    <div class="req-flow-title">End-to-End Request Flow — POST /api/recommend</div>
+    <div class="req-steps">
+
+      <div class="req-step">
+        <div class="req-step-num">01</div>
+        <div class="req-step-name">User Input</div>
+        <div class="req-step-sub">origin, dest, weight, priority, vehicle</div>
+      </div>
+      <div class="req-arrow">
+        <svg class="req-arrow-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="req-step">
+        <div class="req-step-num">02</div>
+        <div class="req-step-name">Axios POST</div>
+        <div class="req-step-sub">JSON body to :8000/api/recommend</div>
+      </div>
+      <div class="req-arrow">
+        <svg class="req-arrow-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="req-step">
+        <div class="req-step-num">03</div>
+        <div class="req-step-name">FastAPI Route</div>
+        <div class="req-step-sub">Pydantic validation, parse body</div>
+      </div>
+      <div class="req-arrow">
+        <svg class="req-arrow-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="req-step">
+        <div class="req-step-num">04</div>
+        <div class="req-step-name">scorer.py</div>
+        <div class="req-step-sub">Build 12-feature vector per carrier</div>
+      </div>
+      <div class="req-arrow">
+        <svg class="req-arrow-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="req-step">
+        <div class="req-step-num">05</div>
+        <div class="req-step-name">XGBoost</div>
+        <div class="req-step-sub">model.predict(X) → score 0–100</div>
+      </div>
+      <div class="req-arrow">
+        <svg class="req-arrow-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="req-step">
+        <div class="req-step-num">06</div>
+        <div class="req-step-name">SHAP + Neg.</div>
+        <div class="req-step-sub">Explain score, flag overpriced bids</div>
+      </div>
+      <div class="req-arrow">
+        <svg class="req-arrow-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="req-step">
+        <div class="req-step-num">07</div>
+        <div class="req-step-name">JSON Response</div>
+        <div class="req-step-sub">Ranked carriers + factors + signals</div>
+      </div>
+      <div class="req-arrow">
+        <svg class="req-arrow-svg" viewBox="0 0 28 12"><line x1="0" y1="6" x2="22" y2="6" stroke="#60A5FA" stroke-width="1.5"/><polygon points="18,2 28,6 18,10" fill="#60A5FA"/></svg>
+      </div>
+
+      <div class="req-step">
+        <div class="req-step-num">08</div>
+        <div class="req-step-name">UI Render</div>
+        <div class="req-step-sub">CarrierCard + FactorChart rendered</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DATA GENERATION -->
+  <div class="layer-label">Data Generation Pipeline</div>
+  <div class="zone zone-client">
+    <div class="zone-title"><div class="zone-title-dot"></div>Synthetic Data Generator — data_generator.py</div>
+    <div class="node-grid">
+      <div class="node">
+        <span class="node-icon">🌆</span>
+        <div class="node-name">20 Indian Cities</div>
+        <div class="node-desc">Mumbai, Delhi, Bengaluru, Chennai, Hyderabad, Pune, Ahmedabad, Kolkata, Jaipur, Surat and 10 more. All 380 lane combinations generated.</div>
+        <div class="node-tags"><span class="tag">380 Lanes</span><span class="tag">Geo-Grid</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🚚</span>
+        <div class="node-name">15 Carriers</div>
+        <div class="node-desc">BlueDart, GATI, Delhivery, TCI, Mahindra Logistics, Rivigo, DHL India, FedEx India, and 7 regional carriers. Each has seeded performance profiles.</div>
+        <div class="node-tags"><span class="tag">National</span><span class="tag">Regional</span><span class="tag">International</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">📅</span>
+        <div class="node-name">2-Year Date Range</div>
+        <div class="node-desc">Jan 2023 – Dec 2024. Seasonality effects baked into on_time_delivery probabilities. Random seed ensures reproducibility.</div>
+        <div class="node-tags"><span class="tag">Reproducible</span><span class="tag">Seed</span><span class="tag">Seasonality</span></div>
+      </div>
+      <div class="node">
+        <span class="node-icon">🏭</span>
+        <div class="node-name">6 Industries</div>
+        <div class="node-desc">FMCG, Pharma, Automotive, Electronics, Textile, Retail. Industry affects priority distribution and damage probability in shipment generation.</div>
+        <div class="node-tags"><span class="tag">Industry Bias</span><span class="tag">Risk Weights</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end canvas -->
+
+<div class="footer">
+  FreightMind &nbsp;·&nbsp; LogisticsNow LoRRI AI Hackathon Round 2 &nbsp;·&nbsp; Architecture v1.0
+</div>
+
+</body>
+</html>
