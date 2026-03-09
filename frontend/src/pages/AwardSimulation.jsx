@@ -1,9 +1,10 @@
+import { API_BASE } from "../config";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { TopBar } from "../components/Navbar";
 import RiskBadge from "../components/RiskBadge";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import { API_BASE } from "../config";
+
 
 const API = "http://127.0.0.1:8000/api";
 
