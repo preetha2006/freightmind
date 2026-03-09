@@ -1,3 +1,4 @@
+import { API_BASE } from "../config";
 import { useState } from "react";
 import axios from "axios";
 import CarrierCard from "../components/CarrierCard";
