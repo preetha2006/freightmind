@@ -1,3 +1,4 @@
+import { API_BASE } from "../config";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { TopBar } from "../components/Navbar";
